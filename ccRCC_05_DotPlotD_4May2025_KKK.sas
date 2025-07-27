@@ -1,6 +1,6 @@
 ********************************************************************************************************************;
 * Project: Model-based detection of aberrant protein-protein interactions 
-					for exploration of aberrant signalling pathways 
+					for exploring aberrant signalling pathways 
 					through pathway maps and gene expression levels
 * Program: ccRCC_05_DotPlotD_4May2025_KKK.sas
 * Objective: Creation of a dot plot for ABS_D_HAT
