@@ -1,6 +1,6 @@
 ********************************************************************************************************************;
 * Project: Model-based detection of aberrant protein-protein interactions 
-					for exploration of aberrant signalling pathways 
+					for exploring aberrant signalling pathways 
 					through pathway maps and gene expression levels
 * Program: SIM_04_CalculationEM_19Feb2025_KKK.sas
 * Objective: Calculation of evaluation measures
@@ -28,7 +28,7 @@ run;
 %macro CPM (NMB);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Scenarios where the true value of delta are 0.00
+* Scenarios where the true value of delta is 0.00
 	* Input: ADS.SIM_EOD_SNR_&NMB.
 	* Output: ADS.SIM_CPM_SNR_&NMB. 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -131,11 +131,10 @@ run;
 %CPM (NMB = 43);
 %CPM (NMB = 46);
 
-/* マクロ定義の開始 */
 %macro CPM (NMB);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Scenarios where the true value of delta are 0.01
+* Scenarios where the true value of delta is 0.01
 	* Input: ADS.SIM_EOD_SNR_&NMB. 
 	* Output: ADS.SIM_CPM_SNR_&NMB. 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -241,7 +240,7 @@ run;
 %macro CPM (NMB);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Scenarios where the true value of delta are 0.05
+* Scenarios where the true value of delta is 0.05
 	* Input: ADS.SIM_EOD_SNR_&NMB.
 	* Output: ADS.SIM_CPM_SNR_&NMB. 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
