@@ -1,6 +1,6 @@
 ********************************************************************************************************************;
 * Project: Model-based detection of aberrant protein-protein interactions 
-					for exploration of aberrant signalling pathways 
+					for exploring aberrant signalling pathways 
 					through pathway maps and gene expression levels
 * Program: SIM_07_DotPlotEM_24Feb2025_KKK.sas
 * Objective: Creation of a forest plot for each evaluation measure
