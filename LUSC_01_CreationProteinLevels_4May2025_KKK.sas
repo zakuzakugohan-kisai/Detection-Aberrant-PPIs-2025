@@ -1,6 +1,6 @@
 ********************************************************************************************************************;
 * Project: Model-based detection of aberrant protein-protein interactions 
-					for exploration of aberrant signalling pathways 
+					for exploring aberrant signalling pathways 
 					through pathway maps and gene expression levels
 * Program: LUSC_01_CreationProteinLevels_4May2025_KKK.sas
 * Objective: Creation of protein levels
