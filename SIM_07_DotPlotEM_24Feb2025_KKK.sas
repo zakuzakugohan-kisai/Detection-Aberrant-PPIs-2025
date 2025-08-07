@@ -2,7 +2,7 @@
 * Project: Model-based detection of aberrant protein-protein interactions 
 					for exploring aberrant signalling pathways 
 					through pathway maps and gene expression levels
-* Program: SIM_07_DotPlotEM_24Feb2025_KKK.sas
+* Program: SIM_07_ForestPlotEM_24Feb2025_KKK.sas
 * Objective: Creation of a forest plot for each evaluation measure
 * Author: Kenta Kevee Kisai
 * SAS version: 9.4
@@ -12,7 +12,7 @@
 * Note: 
 ********************************************************************************************************************;    
 /* 3_LOG */
-proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_07_DotPlotEM_24Feb2025_KKK.txt' new;
+proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_07_ForestPlotEM_24Feb2025_KKK.txt' new;
 run;
 /* 4_ADS */
 libname ADS 'YOUR_PATH_TO_DIRECTORY\4_ADS';
@@ -214,6 +214,7 @@ ods listing gpath = 'YOUR_PATH_TO_DIRECTORY\5_TLF';
 	run;
 ods listing close;
 ods graphics / reset = all;
+
 
 
 
