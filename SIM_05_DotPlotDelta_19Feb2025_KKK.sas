@@ -1,6 +1,6 @@
 ********************************************************************************************************************;
 * Project: Model-based detection of aberrant protein-protein interactions 
-					for exploring aberrant signalling pathways 
+					for explorating aberrant signalling pathways 
 					through pathway maps and gene expression levels
 * Program: SIM_05_DotPlotDelta_19Feb2025_KKK.sas
 * Objective: Creation of a dot plot for DLT_HAT

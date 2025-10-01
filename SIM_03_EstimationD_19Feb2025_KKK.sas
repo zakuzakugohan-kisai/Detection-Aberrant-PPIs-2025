@@ -1,6 +1,6 @@
 ********************************************************************************************************************;
 * Project: Model-based detection of aberrant protein-protein interactions 
-					for exploring aberrant signalling pathways 
+					for explorating aberrant signalling pathways 
 					through pathway maps and gene expression levels
 * Program: SIM_03_EstimationD_19Feb2025_KKK.sas
 * Objective: Estimation of D
@@ -38,7 +38,7 @@ data ADS.SIM_EOD_SNR_&NMB.;
 		if MPE = 'NE' then do;
 			DLT_HAT = .;
 			ABS_D_HAT = 10.0;
-			GROUP_P = 'Æ’Ã‚^';
+			GROUP_P = 'ƒÂ^';
 			GROUP_D = '|d^|';
 		end;
 		/* Model X1 */
@@ -53,7 +53,7 @@ data ADS.SIM_EOD_SNR_&NMB.;
 				ABS_D_HAT = 9.0;
 				ABS_D = 'VHAT';
 			end;
-			GROUP_P = 'Æ’Ã‚^';
+			GROUP_P = 'ƒÂ^';
 			GROUP_D = '|d^|';
 		end;
 		/* Model X2 */
@@ -68,7 +68,7 @@ data ADS.SIM_EOD_SNR_&NMB.;
 				ABS_D_HAT = 9.0;
 				ABS_D = 'VHAT';
 			end;
-			GROUP_P = 'Æ’Ã‚^';
+			GROUP_P = 'ƒÂ^';
 			GROUP_D = '|d^|';
 		end;
 		/* Model X3 */
@@ -87,7 +87,7 @@ data ADS.SIM_EOD_SNR_&NMB.;
 				ABS_D_HAT = 9.0;
 				ABS_D = 'VHAT';
 			end;
-			GROUP_P = 'Æ’Ã‚^';
+			GROUP_P = 'ƒÂ^';
 			GROUP_D = '|d^|';
 		end;
 	keep MPE DLT_HAT ABS_D_HAT ABS_D GROUP_P GROUP_D;

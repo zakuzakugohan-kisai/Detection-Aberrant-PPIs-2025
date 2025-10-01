@@ -2,13 +2,13 @@
 * Project: Model-based detection of aberrant protein-protein interactions 
 					for explorating aberrant signalling pathways 
 					through pathway maps and gene expression levels
-* Program: SIM_02_EstimationDelta_19Feb2025_KKK.sas
+* Program: ccRCC_03_EstimationDelta_4May2025_KKK.sas
 * Objective: Estimation of DLT
 * Author: Kenta Kevee Kisai
 * SAS version: 9.4
 * Platform: Windows
-* Made: 2 September 2024
-* Update: 19 February 2025
+* Made: 20 June 2024
+* Update: 4 May 2025
 * Note: 
 ********************************************************************************************************************;
 /* 4_ADS */
@@ -22,30 +22,23 @@ data _null_;
 	put datetime nldatm.;
 run;
 
-%macro MPE (NMB, F);
+%macro MPE (PPI);
 
 /* 3_LOG */
-proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_OUT_19Feb2025_KKK.txt' new;
-run;
-
-* ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Specify the dataset to be applied
-	* Input: ADS.SIM_DAT_SNR_&NMB.
-	* Output: ADX
-* ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-data ADX;
-	set ADS.SIM_DAT_SNR_&NMB.;
-		where F = &F.;
+proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_OUT_4May2025_KKK.txt' new;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 * Model X1
-	* Input: ADX
+	* Input: ADS.ccRCC_ADX_&PPI., ADS.ccRCC_ADQ_&PPI., ADS.ccRCC_MOX_&PPI.
 	* Output: MDLX1
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 /* Least squares estimation for initial values of parameters */
 
 /* Case */
+data ADX;
+	set ADS.ccRCC_ADX_&PPI.;
+run;
 proc reg data = ADX;
 	where J = 1;
 		model X_2 = X_1;
@@ -60,12 +53,8 @@ data CAS;
 			BET_1_MDLX1_TIL = COL2;
 	keep ALP_1_MDLX1_TIL BET_1_MDLX1_TIL;
 run;
-data ADQ;
-	set ADX (obs = 1);
-	keep Q_1;
-run;
 data CAS;
-	merge CAS ADQ;
+	merge CAS ADS.ccRCC_ADQ_&PPI.;
 run;
 data CAS;
 	set CAS;
@@ -73,9 +62,12 @@ data CAS;
 			if P_1_MDLX1_TIL <= 0 or P_1_MDLX1_TIL >= 1 or P_1_MDLX1_TIL = . then P_1_MDLX1_TIL = 0.5;
 		K_1_MDLX1_TIL = P_1_MDLX1_TIL/(ALP_1_MDLX1_TIL*(1-P_1_MDLX1_TIL));
 			if K_1_MDLX1_TIL <= 0 or K_1_MDLX1_TIL = . then K_1_MDLX1_TIL = 1;
-	keep Q_1 K_1_MDLX1_TIL P_1_MDLX1_TIL;
+	keep Q_1_HAT K_1_MDLX1_TIL P_1_MDLX1_TIL;
 run;
 /* Control */
+data ADX;
+	set ADS.ccRCC_ADX_&PPI.;
+run;
 proc reg data = ADX;
 	where J = 0;
 		model X_2 = X_1;
@@ -90,12 +82,8 @@ data CTL;
 			BET_0_MDLX1_TIL = COL2;
 	keep ALP_0_MDLX1_TIL BET_0_MDLX1_TIL;
 run;
-data ADQ;
-	set ADX (obs = 1);
-	keep Q_0;
-run;
 data CTL;
-	merge CTL ADQ;
+	merge CTL ADS.ccRCC_ADQ_&PPI.;
 run;
 data CTL;
 	set CTL;
@@ -103,11 +91,11 @@ data CTL;
 			if P_0_MDLX1_TIL <= 0 or P_0_MDLX1_TIL >= 1 or P_0_MDLX1_TIL = . then P_0_MDLX1_TIL = 0.5;
 		K_0_MDLX1_TIL = P_0_MDLX1_TIL/(ALP_0_MDLX1_TIL*(1-P_0_MDLX1_TIL));
 			if K_0_MDLX1_TIL <= 0 or K_0_MDLX1_TIL = . then K_0_MDLX1_TIL = 1;
-	keep Q_0 K_0_MDLX1_TIL P_0_MDLX1_TIL;
+	keep Q_0_HAT K_0_MDLX1_TIL P_0_MDLX1_TIL;
 run;
 /* Integration */
 data MDLX1;
-	merge CAS CTL;
+	merge CAS CTL ADS.ccRCC_MOX_&PPI.;
 		DLT_MDLX1_TIL = P_1_MDLX1_TIL - P_0_MDLX1_TIL; 
 run;
 
@@ -115,16 +103,16 @@ run;
 
 data _null_;
 	set MDLX1;
-		call symputx ('Q_1', Q_1);
+		call symputx ('Q_1_HAT', Q_1_HAT);
 		call symputx ('K_1_MDLX1_TIL', K_1_MDLX1_TIL);
 		call symputx ('DLT_MDLX1_TIL', DLT_MDLX1_TIL);
-		call symputx ('Q_0', Q_0);
+		call symputx ('Q_0_HAT', Q_0_HAT);
 		call symputx ('K_0_MDLX1_TIL', K_0_MDLX1_TIL);
 		call symputx ('P_0_MDLX1_TIL', P_0_MDLX1_TIL);
 run;
 
 /* 3_LOG */
-proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_WNG_19Feb2025_KKK.txt' new;
+proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_WNG_4May2025_KKK.txt' new;
 run;
 
 	proc nlmixed data = ADX technique = quanew method = gauss maxiter = 200;
@@ -134,14 +122,14 @@ run;
 						SGM_GAM_MDLX1_HAT = 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000 /* Variance */
 						SGM_EPS_MDLX1_HAT = 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000 /* Variance */;
 		bounds -1 < DLT_MDLX1_HAT < 1, SGM_GAM_MDLX1_HAT > 0, SGM_EPS_MDLX1_HAT > 0;
-		model X_2 ~ normal (J*(((DLT_MDLX1_HAT+P_0_MDLX1_HAT)/(K_MDLX1_HAT*(1-(DLT_MDLX1_HAT+P_0_MDLX1_HAT))))+(DLT_MDLX1_HAT+P_0_MDLX1_HAT)*&Q_1.*X_1)
-											+ (1-J)*((P_0_MDLX1_HAT/(K_MDLX1_HAT*(1-P_0_MDLX1_HAT)))+P_0_MDLX1_HAT*&Q_0.*X_1) + GAM_MDLX1_HAT, SGM_EPS_MDLX1_HAT);
+		model X_2 ~ normal (J*(((DLT_MDLX1_HAT+P_0_MDLX1_HAT)/(K_MDLX1_HAT*(1-(DLT_MDLX1_HAT+P_0_MDLX1_HAT))))+(DLT_MDLX1_HAT+P_0_MDLX1_HAT)*&Q_1_HAT.*X_1)
+											+ (1-J)*((P_0_MDLX1_HAT/(K_MDLX1_HAT*(1-P_0_MDLX1_HAT)))+P_0_MDLX1_HAT*&Q_0_HAT.*X_1) + GAM_MDLX1_HAT, SGM_EPS_MDLX1_HAT);
 		random GAM_MDLX1_HAT ~ normal (0, SGM_GAM_MDLX1_HAT) subject = ID;
 		ods output ParameterEstimates = PES FitStatistics = FST ConvergenceStatus = CGS;
 	run;
 
 /* 3_LOG */
-proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_OUT_19Feb2025_KKK.txt' new;
+proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_OUT_4May2025_KKK.txt' new;
 run;
 
 /* Final estimates and their standard errors */
@@ -177,7 +165,7 @@ run;
 /* Output of log warnings to the dataset */
 data WNG;
 	/* 3_LOG */
-	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_WNG_19Feb2025_KKK.txt' truncover;
+	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_WNG_4May2025_KKK.txt' truncover;
 	input MSG_MDLX1 $200.;
 	retain WFG_MDLX1 0;
 		if index (MSG_MDLX1, 'WARNING') > 0 then WFG_MDLX1 = 1;
@@ -210,12 +198,15 @@ run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 * Model X2
-	* Input: ADX
+	* Input: ADS.ccRCC_ADX_&PPI., ADS.ccRCC_ADQ_&PPI., ADS.ccRCC_MOX_&PPI.
 	* Output: MDLX2
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 /* Least squares estimation for initial values of parameters */
 
 /* Case */
+data ADX;
+	set ADS.ccRCC_ADX_&PPI.;
+run;
 proc reg data = ADX;
 	where J = 1;
 		model X_2 = X_1;
@@ -230,12 +221,8 @@ data CAS;
 			BET_1_MDLX2_TIL = COL2;
 	keep ALP_1_MDLX2_TIL BET_1_MDLX2_TIL;
 run;
-data ADQ;
-	set ADX (obs = 1);
-	keep Q_1;
-run;
 data CAS;
-	merge CAS ADQ;
+	merge CAS ADS.ccRCC_ADQ_&PPI.;
 run;
 data CAS;
 	set CAS;
@@ -243,9 +230,12 @@ data CAS;
 			if P_1_MDLX2_TIL <= 0 or P_1_MDLX2_TIL >= 1 or P_1_MDLX2_TIL = . then P_1_MDLX2_TIL = 0.5;
 		K_1_MDLX2_TIL = 1/(ALP_1_MDLX2_TIL*(P_1_MDLX2_TIL-1));
 			if K_1_MDLX2_TIL <= 0 or K_1_MDLX2_TIL = . then K_1_MDLX2_TIL = 1;
-	keep Q_1 K_1_MDLX2_TIL P_1_MDLX2_TIL;
+	keep Q_1_HAT K_1_MDLX2_TIL P_1_MDLX2_TIL;
 run;
 /* Control */
+data ADX;
+	set ADS.ccRCC_ADX_&PPI.;
+run;
 proc reg data = ADX;
 	where J = 0;
 		model X_2 = X_1;
@@ -260,12 +250,8 @@ data CTL;
 			BET_0_MDLX2_TIL = COL2;
 	keep ALP_0_MDLX2_TIL BET_0_MDLX2_TIL;
 run;
-data ADQ;
-	set ADX (obs = 1);
-	keep Q_0;
-run;
 data CTL;
-	merge CTL ADQ;
+	merge CTL ADS.ccRCC_ADQ_&PPI.;
 run;
 data CTL;
 	set CTL;
@@ -273,11 +259,11 @@ data CTL;
 			if P_0_MDLX2_TIL <= 0 or P_0_MDLX2_TIL >= 1 or P_0_MDLX2_TIL = . then P_0_MDLX2_TIL = 0.5;
 		K_0_MDLX2_TIL = 1/(ALP_0_MDLX2_TIL*(P_0_MDLX2_TIL-1));
 			if K_0_MDLX2_TIL <= 0 or K_0_MDLX2_TIL = . then K_0_MDLX2_TIL = 1;
-	keep Q_0 K_0_MDLX2_TIL P_0_MDLX2_TIL;
+	keep Q_0_HAT K_0_MDLX2_TIL P_0_MDLX2_TIL;
 run;
 /* Integration */
 data MDLX2;
-	merge CAS CTL;
+	merge CAS CTL ADS.ccRCC_MOX_&PPI.;
 		DLT_MDLX2_TIL = P_1_MDLX2_TIL - P_0_MDLX2_TIL;
 run;
 
@@ -285,16 +271,16 @@ run;
 
 data _null_;
 	set MDLX2;
-		call symputx ('Q_1', Q_1);
+		call symputx ('Q_1_HAT', Q_1_HAT);
 		call symputx ('K_1_MDLX2_TIL', K_1_MDLX2_TIL);
 		call symputx ('DLT_MDLX2_TIL', DLT_MDLX2_TIL);
-		call symputx ('Q_0', Q_0);
+		call symputx ('Q_0_HAT', Q_0_HAT);
 		call symputx ('K_0_MDLX2_TIL', K_0_MDLX2_TIL);
 		call symputx ('P_0_MDLX2_TIL', P_0_MDLX2_TIL);
 run;
 
 /* 3_LOG */
-proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_WNG_19Feb2025_KKK.txt' new;
+proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_WNG_4May2025_KKK.txt' new;
 run;
 
 	proc nlmixed data = ADX technique = quanew method = gauss maxiter = 200;
@@ -304,14 +290,14 @@ run;
 						SGM_GAM_MDLX2_HAT = 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000 /* Variance */
 						SGM_EPS_MDLX2_HAT = 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000 /* Variance */;
 		bounds -1 < DLT_MDLX2_HAT < 1, SGM_GAM_MDLX2_HAT > 0, SGM_EPS_MDLX2_HAT > 0;
-		model X_2 ~ normal (J*((1/(K_MDLX2_HAT*(DLT_MDLX2_HAT+P_0_MDLX2_HAT-1)))+(&Q_1./(DLT_MDLX2_HAT+P_0_MDLX2_HAT))*X_1)
-											+ (1-J)*((1/(K_MDLX2_HAT*(P_0_MDLX2_HAT-1)))+(&Q_0./P_0_MDLX2_HAT)*X_1) + GAM_MDLX2_HAT, SGM_EPS_MDLX2_HAT);
+		model X_2 ~ normal (J*((1/(K_MDLX2_HAT*(DLT_MDLX2_HAT+P_0_MDLX2_HAT-1)))+(&Q_1_HAT./(DLT_MDLX2_HAT+P_0_MDLX2_HAT))*X_1)
+											+ (1-J)*((1/(K_MDLX2_HAT*(P_0_MDLX2_HAT-1)))+(&Q_0_HAT./P_0_MDLX2_HAT)*X_1) + GAM_MDLX2_HAT, SGM_EPS_MDLX2_HAT);
 		random GAM_MDLX2_HAT ~ normal (0, SGM_GAM_MDLX2_HAT) subject = ID;
 		ods output ParameterEstimates = PES FitStatistics = FST ConvergenceStatus = CGS;
 	run;
 
 /* 3_LOG */
-proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_OUT_19Feb2025_KKK.txt' new;
+proc printto log = 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_OUT_4May2025_KKK.txt' new;
 run;
 
 /* Final estimates and their standard errors */
@@ -347,7 +333,7 @@ run;
 /* Output of log warnings to the dataset */
 data WNG;
 	/* 3_LOG */
-	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_WNG_19Feb2025_KKK.txt' truncover;
+	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_WNG_4May2025_KKK.txt' truncover;
 	input MSG_MDLX2 $200.;
 	retain WFG_MDLX2 0;
 		if index (MSG_MDLX2, 'WARNING') > 0 then WFG_MDLX2 = 1;
@@ -380,18 +366,37 @@ run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 * Integrate Model X1 and X2
-	* Input: MDLX1, MDLX2
-	* Output: MPE
+	* Input: ADS.ccRCC_MOX_&PPI., ADS.ccRCC_ADQ_&PPI., MDLX1, MDLX2
+	* Output: ADS.ccRCC_MPE_&PPI. 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 /* Integration of Model X1 and X2 */
 data MPE;
-	merge MDLX1 MDLX2;
+	merge ADS.ccRCC_MOX_&PPI. ADS.ccRCC_ADQ_&PPI. MDLX1 MDLX2;
 	LLR = LLH_MDLX1 - LLH_MDLX2;
 run;
-data MPE;
+data ADS.ccRCC_MPE_&PPI.;
 	set MPE;
+		/* ZERO */
+		if ((MEAN_CAS_X1 = 0 or MEAN_CAS_X2 = 0) and (MEAN_CTL_X1 = 0 or MEAN_CTL_X2 = 0)) or (Q_1_HAT = 0 and Q_0_HAT = 0) then do;
+			K_MDLX1_HAT = .;
+			K_MDLX2_HAT = .;
+			DLT_MDLX1_HAT = .;
+			DLT_MDLX2_HAT = .;
+			P_0_MDLX1_HAT = .;
+			P_0_MDLX2_HAT = .;
+			SGM_GAM_MDLX1_HAT = .;
+			SGM_GAM_MDLX2_HAT = .;
+			SGM_EPS_MDLX1_HAT = .;
+			SGM_EPS_MDLX2_HAT = .;
+			V_MDLX1_HAT = .;
+			V_MDLX2_HAT = .;
+			LH_MDLX1 = .;
+			LH_MDLX2 = .;
+			LLR = .;
+			MPE = 'ZERO';
+		end;
 		/* Non-estimation */
-		if (STT_MDLX1 ^= 0 or WNF_MDLX1 = 1) and (STT_MDLX2 ^= 0 or WNF_MDLX2 = 1) then do;
+		else if (STT_MDLX1 ^= 0 or WNF_MDLX1 = 1) and (STT_MDLX2 ^= 0 or WNF_MDLX2 = 1) then do;
 			K_MDLX1_HAT = .;
 			K_MDLX2_HAT = .;
 			DLT_MDLX1_HAT = .;
@@ -507,94 +512,156 @@ data MPE;
 				MPE = 'X3';
 			end;
 		end;
-	keep K_MDLX1_HAT K_MDLX2_HAT
+		length PPI $200.; PPI = "&PPI.";
+	keep Q_1_HAT Q_0_HAT 
+				RSN_MDLX1 RSN_MDLX2 
+				WGM1_MDLX1 WGM2_MDLX1 WGM3_MDLX1 WGM4_MDLX1 
+				WGM1_MDLX2 WGM2_MDLX2 WGM3_MDLX2 WGM4_MDLX2
+				K_MDLX1_HAT K_MDLX2_HAT
 				DLT_MDLX1_HAT DLT_MDLX2_HAT
 				P_0_MDLX1_HAT P_0_MDLX2_HAT
 				SGM_GAM_MDLX1_HAT SGM_GAM_MDLX2_HAT 
 				SGM_EPS_MDLX1_HAT SGM_EPS_MDLX2_HAT 
 				V_MDLX1_HAT V_MDLX2_HAT
-				LH_MDLX1 LH_MDLX2 LLR MPE;
+				LH_MDLX1 LH_MDLX2 LLR MPE PPI;
+run;
+
+* ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
+* Deletion of the datasets in WORK
+	* Input: None
+	* Output: None
+* ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
+proc datasets lib = WORK kill nolist; 
 run;
 
 %mend MPE;
 
-%macro ITE (NMB);
+%MPE (PPI = Grb10_R);
+%MPE (PPI = R_IRS1);
+%MPE (PPI = S6K_IRS1);
+%MPE (PPI = IRS1_PI3K);
+%MPE (PPI = PI3K_mTORC2);
+%MPE (PPI = PDK1_Akt);
+%MPE (PPI = Akt_IKKA);
+%MPE (PPI = IKKA_mTORC2);
+%MPE (PPI = mTORC2_Rho);
+%MPE (PPI = mTORC2_PKC);
+%MPE (PPI = mTORC2_SGK1);
+%MPE (PPI = R_Grb2);
+%MPE (PPI = Grb2_SOS);
+%MPE (PPI = SOS_Ras);
+%MPE (PPI = Ras_Raf);
+%MPE (PPI = Raf_MEK);
+%MPE (PPI = MEK_ERK1);
+%MPE (PPI = ERK1_RSK);
+%MPE (PPI = TNFR_IKKB);
+%MPE (PPI = Frizzled_Dvl);
+%MPE (PPI = Dvl_GSK3B);
+%MPE (PPI = STRAD_AMPK);
+%MPE (PPI = ERK1_TSC1);
+%MPE (PPI = RSK_TSC1);
+%MPE (PPI = IKKB_TSC1);
+%MPE (PPI = GSK3B_TSC1);
+%MPE (PPI = REDD1_TSC1);
+%MPE (PPI = AMPK_TSC1);
+%MPE (PPI = Akt_TSC1);
+%MPE (PPI = Akt_PRAS40);
+%MPE (PPI = IKKA_mTORC1);
+%MPE (PPI = TSC1_Rheb);
+%MPE (PPI = Rheb_mTORC1);
+%MPE (PPI = AMPK_mTORC1);
+%MPE (PPI = SLC38A9_Ragulator);
+%MPE (PPI = VATPase_Ragulator);
+%MPE (PPI = FNIP_RagA);
+%MPE (PPI = Ragulator_RagA);
+%MPE (PPI = RagA_mTORC1);
+%MPE (PPI = SESN2_GATOR2);
+%MPE (PPI = CASTOR1_GATOR2);
+%MPE (PPI = GATOR2_GATOR1);
+%MPE (PPI = GATOR1_RagA);
+%MPE (PPI = Skp2_RagA);
+%MPE (PPI = RNF152_RagA);
+%MPE (PPI = S6K_mTORC2);
+%MPE (PPI = mTORC1_CLIP170);
+%MPE (PPI = mTORC1_Grb10);
+%MPE (PPI = mTORC1_Lipin1);
+%MPE (PPI = mTORC1_ATG1);
+%MPE (PPI = mTORC1_4EBP);
+%MPE (PPI = mTORC1_S6K);
+%MPE (PPI = 4EBP_eIF4E);
+%MPE (PPI = S6K_eIF4B);
+%MPE (PPI = S6K_S6);
+%MPE (PPI = Deptor_mTORC1);
+%MPE (PPI = Deptor_mTORC2);
+%MPE (PPI = PRAS40_mTORC1);
+%MPE (PPI = mTORC2_Akt);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Run 1,000 iterations
-	* Input: MPE
-	* Output: ADS.SIM_MPE_SNR_&NMB.
+* Integrate the results of each interaction
+	* Input: ADS.ccRCC_MPE_&PPI. 
+	* Output: TLF.ccRCC_MPE
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-data ADS.SIM_MPE_SNR_&NMB.;
-run; 
-%do F = 1 %to 1000; 
-	%MPE (NMB = &NMB., F = &F.); 
-	data ADS.SIM_MPE_SNR_&NMB.;
-		set ADS.SIM_MPE_SNR_&NMB. MPE;
-    run;
-	proc datasets lib = WORK kill nolist; 
-	run;
-%end;
-data ADS.SIM_MPE_SNR_&NMB.;
-	set ADS.SIM_MPE_SNR_&NMB.;
-		if _n_ = 1 then delete;
+data TLF.ccRCC_MPE;
+	set ADS.ccRCC_MPE_Grb10_R 
+			ADS.ccRCC_MPE_R_IRS1 
+			ADS.ccRCC_MPE_S6K_IRS1 
+			ADS.ccRCC_MPE_IRS1_PI3K 
+			ADS.ccRCC_MPE_PI3K_mTORC2 
+			ADS.ccRCC_MPE_PDK1_Akt 
+			ADS.ccRCC_MPE_Akt_IKKA 
+			ADS.ccRCC_MPE_IKKA_mTORC2 
+			ADS.ccRCC_MPE_mTORC2_Rho
+			ADS.ccRCC_MPE_mTORC2_PKC 
+			ADS.ccRCC_MPE_mTORC2_SGK1
+			ADS.ccRCC_MPE_R_Grb2
+			ADS.ccRCC_MPE_Grb2_SOS
+			ADS.ccRCC_MPE_SOS_Ras
+			ADS.ccRCC_MPE_Ras_Raf
+			ADS.ccRCC_MPE_Raf_MEK
+			ADS.ccRCC_MPE_MEK_ERK1
+			ADS.ccRCC_MPE_ERK1_RSK
+			ADS.ccRCC_MPE_TNFR_IKKB
+			ADS.ccRCC_MPE_Frizzled_Dvl
+			ADS.ccRCC_MPE_Dvl_GSK3B
+			ADS.ccRCC_MPE_STRAD_AMPK
+			ADS.ccRCC_MPE_ERK1_TSC1
+			ADS.ccRCC_MPE_RSK_TSC1
+			ADS.ccRCC_MPE_IKKB_TSC1
+			ADS.ccRCC_MPE_GSK3B_TSC1
+			ADS.ccRCC_MPE_REDD1_TSC1
+			ADS.ccRCC_MPE_AMPK_TSC1
+			ADS.ccRCC_MPE_Akt_TSC1
+			ADS.ccRCC_MPE_Akt_PRAS40
+			ADS.ccRCC_MPE_IKKA_mTORC1
+			ADS.ccRCC_MPE_TSC1_Rheb
+			ADS.ccRCC_MPE_Rheb_mTORC1
+			ADS.ccRCC_MPE_AMPK_mTORC1
+			ADS.ccRCC_MPE_SLC38A9_Ragulator
+			ADS.ccRCC_MPE_VATPase_Ragulator
+			ADS.ccRCC_MPE_FNIP_RagA
+			ADS.ccRCC_MPE_Ragulator_RagA
+			ADS.ccRCC_MPE_RagA_mTORC1
+			ADS.ccRCC_MPE_SESN2_GATOR2
+			ADS.ccRCC_MPE_CASTOR1_GATOR2
+			ADS.ccRCC_MPE_GATOR2_GATOR1
+			ADS.ccRCC_MPE_GATOR1_RagA
+			ADS.ccRCC_MPE_Skp2_RagA
+			ADS.ccRCC_MPE_RNF152_RagA
+			ADS.ccRCC_MPE_S6K_mTORC2
+			ADS.ccRCC_MPE_mTORC1_CLIP170
+			ADS.ccRCC_MPE_mTORC1_Grb10
+			ADS.ccRCC_MPE_mTORC1_Lipin1
+			ADS.ccRCC_MPE_mTORC1_ATG1
+			ADS.ccRCC_MPE_mTORC1_4EBP
+			ADS.ccRCC_MPE_mTORC1_S6K
+			ADS.ccRCC_MPE_4EBP_eIF4E
+			ADS.ccRCC_MPE_S6K_eIF4B
+			ADS.ccRCC_MPE_S6K_S6
+			ADS.ccRCC_MPE_Deptor_mTORC1
+			ADS.ccRCC_MPE_Deptor_mTORC2
+			ADS.ccRCC_MPE_PRAS40_mTORC1
+			ADS.ccRCC_MPE_mTORC2_Akt;
 run;
-
-%mend ITE;
-
-%ITE (NMB = 01);
-%ITE (NMB = 02);
-%ITE (NMB = 03);
-%ITE (NMB = 04);
-%ITE (NMB = 05);
-%ITE (NMB = 06);
-%ITE (NMB = 07);
-%ITE (NMB = 08);
-%ITE (NMB = 09);
-%ITE (NMB = 10);
-%ITE (NMB = 11);
-%ITE (NMB = 12);
-%ITE (NMB = 13);
-%ITE (NMB = 14);
-%ITE (NMB = 15);
-%ITE (NMB = 16);
-%ITE (NMB = 17);
-%ITE (NMB = 18);
-%ITE (NMB = 19);
-%ITE (NMB = 20);
-%ITE (NMB = 21);
-%ITE (NMB = 22);
-%ITE (NMB = 23);
-%ITE (NMB = 24);
-%ITE (NMB = 25);
-%ITE (NMB = 26);
-%ITE (NMB = 27);
-%ITE (NMB = 28);
-%ITE (NMB = 29);
-%ITE (NMB = 30);
-%ITE (NMB = 31);
-%ITE (NMB = 32);
-%ITE (NMB = 33);
-%ITE (NMB = 34);
-%ITE (NMB = 35);
-%ITE (NMB = 36);
-%ITE (NMB = 37);
-%ITE (NMB = 38);
-%ITE (NMB = 39);
-%ITE (NMB = 40);
-%ITE (NMB = 41);
-%ITE (NMB = 42);
-%ITE (NMB = 43);
-%ITE (NMB = 44);
-%ITE (NMB = 45);
-%ITE (NMB = 46);
-%ITE (NMB = 47);
-%ITE (NMB = 48);
-
-
-
-
-
 
 
 
