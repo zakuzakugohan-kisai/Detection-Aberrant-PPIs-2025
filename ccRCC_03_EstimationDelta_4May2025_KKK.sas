@@ -147,7 +147,7 @@ data SER;
 		if _n_ = 2 then output;
 	keep V_MDLX1_HAT;
 run;
-/* Log-likelihood at the final estimate */
+/* Log-likelihood at the final estimates */
 data FST;
 	set FST;
 		LLH_MDLX1 = -(1/2)*VALUE;
@@ -161,7 +161,7 @@ data CGS;
 		RSN_MDLX1 = REASON;
 	keep STT_MDLX1 RSN_MDLX1;
 run;
-/* Output of warnings to a dataset */
+/* Warnings */
 data WNG;
 	/* 3_LOG */
 	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_WNG_4May2025_KKK.txt' truncover;
@@ -315,7 +315,7 @@ data SER;
 		if _n_ = 2 then output;
 	keep V_MDLX2_HAT;
 run;
-/* Log-likelihood at the final estimate */
+/* Log-likelihood at the final estimates */
 data FST;
 	set FST;
 		LLH_MDLX2 = -(1/2)*VALUE;
@@ -329,7 +329,7 @@ data CGS;
 		RSN_MDLX2 = REASON;
 	keep STT_MDLX2 RSN_MDLX2;
 run;
-/* Output of warnings to a dataset */
+/* Warnings */
 data WNG;
 	/* 3_LOG */
 	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\ccRCC_03_EstimationDelta_WNG_4May2025_KKK.txt' truncover;
@@ -596,7 +596,7 @@ run;
 %MPE (PPI = mTORC2_Akt);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate the results of each PPI
+* Integrate the results from each PPI
 	* Input: ADS.ccRCC_MPE_&PPI. 
 	* Output: TLF.ccRCC_MPE
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;

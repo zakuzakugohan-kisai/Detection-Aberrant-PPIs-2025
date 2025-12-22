@@ -204,7 +204,7 @@ ods listing gpath = 'YOUR_PATH_TO_DIRECTORY\5_TLF';
 ods listing close;
 ods graphics / reset = all;
 
-/* V^ = 0 */
+/* V_HAT */
 ods graphics / reset = index imagename = 'VHAT_24Feb2025_KKK' outputfmt = png;
 ods listing gpath = 'YOUR_PATH_TO_DIRECTORY\5_TLF';
 	ods graphics / height = 10 in width = 10 in;
