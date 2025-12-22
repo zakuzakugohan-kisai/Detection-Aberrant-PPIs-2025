@@ -1,7 +1,6 @@
 ********************************************************************************************************************;
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: ccRCC_03_EstimationDelta_4May2025_KKK.sas
 * Objective: Estimation of DLT
 * Author: Kenta Kevee Kisai
@@ -30,7 +29,7 @@ run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 * Model X1
-	* Input: ADS.LUSC_ADX_&PPI., ADS.LUSC_ADQ_&PPI., ADS.LUSC_MOX_&PPI.
+	* Input: ADS.LUSC_ADX_&PPI., ADS.LUSC_ADQ_&PPI., and ADS.LUSC_MOX_&PPI.
 	* Output: MDLX1
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 /* Least squares estimation for initial values of parameters */
@@ -148,7 +147,7 @@ data SER;
 		if _n_ = 2 then output;
 	keep V_MDLX1_HAT;
 run;
-/* Log-likelihood of the final estimates */
+/* Log-likelihood at the final estimate */
 data FST;
 	set FST;
 		LLH_MDLX1 = -(1/2)*VALUE;
@@ -162,7 +161,7 @@ data CGS;
 		RSN_MDLX1 = REASON;
 	keep STT_MDLX1 RSN_MDLX1;
 run;
-/* Output of log warnings to the dataset  */
+/* Output of warnings to a dataset */
 data WNG;
 	/* 3_LOG */
 	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\LUSC_03_EstimationDelta_WNG_4May2025_KKK.txt' truncover;
@@ -191,14 +190,14 @@ data WGM;
 			WGM4_MDLX1 = COL4;
 	keep WGM1_MDLX1 WGM2_MDLX1 WGM3_MDLX1 WGM4_MDLX1;
 run;
-/* Integration of the estimation results */
+/* Integration of estimation results */
 data MDLX1;
 	merge EST SER FST CGS WGF WGM;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 * Model X2
-	* Input: ADS.LUSC_ADX_&PPI., ADS.LUSC_ADQ_&PPI., ADS.LUSC_MOX_&PPI.
+	* Input: ADS.LUSC_ADX_&PPI., ADS.LUSC_ADQ_&PPI., and ADS.LUSC_MOX_&PPI.
 	* Output: MDLX2
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 /* Least squares estimation for initial values of parameters */
@@ -316,7 +315,7 @@ data SER;
 		if _n_ = 2 then output;
 	keep V_MDLX2_HAT;
 run;
-/* Log-likelihood of the final estimates */
+/* Log-likelihood at the final estimate */
 data FST;
 	set FST;
 		LLH_MDLX2 = -(1/2)*VALUE;
@@ -330,7 +329,7 @@ data CGS;
 		RSN_MDLX2 = REASON;
 	keep STT_MDLX2 RSN_MDLX2;
 run;
-/* Output of log warnings to the dataset */
+/* Output of warnings to a dataset */
 data WNG;
 	/* 3_LOG */
 	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\LUSC_03_EstimationDelta_WNG_4May2025_KKK.txt' truncover;
@@ -359,17 +358,17 @@ data WGM;
 			WGM4_MDLX2 = COL4;
 	keep WGM1_MDLX2 WGM2_MDLX2 WGM3_MDLX2 WGM4_MDLX2;
 run;
-/* Integration of the estimation results */
+/* Integration of estimation results */
 data MDLX2;
 	merge EST SER FST CGS WGF WGM;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate Model X1 and X2
-	* Input: ADS.LUSC_MOX_&PPI., ADS.LUSC_ADQ_&PPI., MDLX1, MDLX2
+* Integrate the results from Models X1 and X2
+	* Input: ADS.LUSC_MOX_&PPI., ADS.LUSC_ADQ_&PPI., MDLX1, and MDLX2
 	* Output: ADS.LUSC_MPE_&PPI.
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-/* Integration of Model X1 and X2 */
+/* Integration of the results from Models X1 and X2 */
 data MPE;
 	merge ADS.LUSC_MOX_&PPI. ADS.LUSC_ADQ_&PPI. MDLX1 MDLX2;
 	LLR = LLH_MDLX1 - LLH_MDLX2;
@@ -527,7 +526,7 @@ data ADS.LUSC_MPE_&PPI.;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Deletion of the datasets in WORK
+* Deletion of datasets in WORK
 	* Input: None
 	* Output: None
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -597,7 +596,7 @@ run;
 %MPE (PPI = mTORC2_Akt);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate the results of each interaction
+* Integrate the results of each PPI
 	* Input: ADS.LUSC_MPE_&PPI. 
 	* Output: TLF.LUSC_MPE
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;

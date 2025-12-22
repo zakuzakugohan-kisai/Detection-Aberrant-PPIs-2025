@@ -1,7 +1,6 @@
 ********************************************************************************************************************;
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: SIM_02_EstimationDelta_19Feb2025_KKK.sas
 * Objective: Estimation of DLT
 * Author: Kenta Kevee Kisai
@@ -160,7 +159,7 @@ data SER;
 		if _n_ = 2 then output;
 	keep V_MDLX1_HAT;
 run;
-/* Log-likelihood of the final estimates */
+/* Log-likelihood at the final estimate */
 data FST;
 	set FST;
 		LLH_MDLX1 = -(1/2)*VALUE;
@@ -174,7 +173,7 @@ data CGS;
 		RSN_MDLX1 = REASON;
 	keep STT_MDLX1 RSN_MDLX1;
 run;
-/* Output of log warnings to the dataset */
+/* Output of warnings to a dataset */
 data WNG;
 	/* 3_LOG */
 	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_WNG_19Feb2025_KKK.txt' truncover;
@@ -203,7 +202,7 @@ data WGM;
 			WGM4_MDLX1 = COL4;
 	keep WGM1_MDLX1 WGM2_MDLX1 WGM3_MDLX1 WGM4_MDLX1;
 run;
-/* Integration of the estimation results */
+/* Integration of estimation results */
 data MDLX1;
 	merge EST SER FST CGS WGF WGM;
 run;
@@ -330,7 +329,7 @@ data SER;
 		if _n_ = 2 then output;
 	keep V_MDLX2_HAT;
 run;
-/* Log-likelihood of the final estimates */
+/* Log-likelihood at the final estimate */
 data FST;
 	set FST;
 		LLH_MDLX2 = -(1/2)*VALUE;
@@ -344,7 +343,7 @@ data CGS;
 		RSN_MDLX2 = REASON;
 	keep STT_MDLX2 RSN_MDLX2;
 run;
-/* Output of log warnings to the dataset */
+/* Output of warnings to a dataset */
 data WNG;
 	/* 3_LOG */
 	infile 'YOUR_PATH_TO_DIRECTORY\3_LOG\SIM_02_EstimationDelta_WNG_19Feb2025_KKK.txt' truncover;
@@ -373,17 +372,17 @@ data WGM;
 			WGM4_MDLX2 = COL4;
 	keep WGM1_MDLX2 WGM2_MDLX2 WGM3_MDLX2 WGM4_MDLX2;
 run;
-/* Integration of the estimation results */
+/* Integration of estimation results */
 data MDLX2;
 	merge EST SER FST CGS WGF WGM;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate Model X1 and X2
-	* Input: MDLX1, MDLX2
+* Integrate the results from Models X1 and X2
+	* Input: MDLX1 and MDLX2
 	* Output: MPE
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-/* Integration of Model X1 and X2 */
+/* Integration of the results from Models X1 and X2 */
 data MPE;
 	merge MDLX1 MDLX2;
 	LLR = LLH_MDLX1 - LLH_MDLX2;

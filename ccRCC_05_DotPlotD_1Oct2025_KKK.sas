@@ -1,9 +1,8 @@
 ********************************************************************************************************************;
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: ccRCC_05_DotPlotD_1Oct2025_KKK.sas
-* Objective: Creation of a dot plot for ABS_D_HAT
+* Objective: Creation of dot plots for ABS_D_HAT
 * Author: Kenta Kevee Kisai
 * SAS version: 9.4
 * Platform: Windows
@@ -26,7 +25,7 @@ data _null_;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Create an attribute map dataset
+* Create an attribute map
 	* Input: None
 	* Output: MAP
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -39,7 +38,7 @@ run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 * Create a greyscale dot plot
-	* Input: MAP, TLF.ccRCC_EOD
+	* Input: MAP and TLF.ccRCC_EOD
 	* Output: None
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 data EOD;
@@ -55,7 +54,7 @@ run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 * Create a colour scale dot plot
-	* Input: MAP, TLF.ccRCC_EOD
+	* Input: MAP and TLF.ccRCC_EOD
 	* Output: None
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 data EOD;

@@ -1,7 +1,6 @@
 ********************************************************************************************************************;
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: SIM_01_GenerationData_19Feb2025_KKK.sas
 * Objective: Generation of simulation data
 * Author: Kenta Kevee Kisai

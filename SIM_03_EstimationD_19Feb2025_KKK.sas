@@ -1,7 +1,6 @@
 ********************************************************************************************************************;
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: SIM_03_EstimationD_19Feb2025_KKK.sas
 * Objective: Estimation of D
 * Author: Kenta Kevee Kisai
@@ -28,7 +27,7 @@ run;
 %macro EOD (NMB);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Estimate d
+* Estimate D
 	* Input: ADS.SIM_MPE_SNR_&NMB. 
 	* Output: ADS.SIM_EOD_SNR_&NMB. 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;

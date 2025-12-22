@@ -1,7 +1,6 @@
 ********************************************************************************************************************;
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: ccRCC_04_EstimationD_1Oct2025_KKK.sas
 * Objective: Estimation of D
 * Author: Kenta Kevee Kisai
@@ -28,7 +27,7 @@ run;
 %macro EOD (PPI);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Estimate d
+* Estimate D
 	* Input: ADS.ccRCC_MPE_&PPI. 
 	* Output: ADS.ccRCC_EOD_&PPI. 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -147,7 +146,7 @@ run;
 %EOD (PPI = mTORC2_Akt);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate the results of each interaction
+* Integrate the results of each PPI
 	* Input: ADS.ccRCC_EOD_&PPI. 
 	* Output: TLF.ccRCC_EOD
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;

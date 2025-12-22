@@ -1,9 +1,9 @@
 ################################################################################
-# Project: Model-based detection of aberrant protein-protein interactions 
-#             for exploring aberrant signalling pathways 
+# Project: Model-based quantification of protein–protein interaction aberrations
+#             for exploring dysregulated signalling pathways 
 #             through pathway maps and gene expression levels
 # Program: LUSC_06_Hipathia_30Sep2025_KKK.R
-# Objective: Detection of aberrant signalling pathways 
+# Objective: Detection of dysregulated signalling pathways 
 # Author: Kenta Kevee Kisaï
 # R version: 4.5.1
 # Platform: Windows
@@ -21,7 +21,8 @@ getwd()
 
 #------------------------------------------------------------------------------#
 # File loading
-  # Input: 2_TCGA_LUSC_RNASeq_Group_8Jul2024.xlsx and 2_TCGA_LUSC_RNASeq_UnstrandedTPM_9Jul2024.xlsx
+  # Input: 2_TCGA_LUSC_RNASeq_Group_8Jul2024.xlsx 
+  #           and 2_TCGA_LUSC_RNASeq_UnstrandedTPM_9Jul2024.xlsx
   # Output: GROUP_01 and TPM_01
 #------------------------------------------------------------------------------#
 install.packages('readxl')
@@ -30,7 +31,7 @@ GROUP_01 <- read_excel('../1_RAW/2_TCGA_LUSC_RNASeq_Group_8Jul2024.xlsx')
 TPM_01 <- read_excel('../1_RAW/2_TCGA_LUSC_RNASeq_UnstrandedTPM_9Jul2024.xlsx')
 
 #------------------------------------------------------------------------------#
-# Analysis with HiPathia
+# Analysis using HiPathia
 # Input: GROUP_01 and TPM_01
 # Output: CMP_01
 #------------------------------------------------------------------------------#
@@ -50,7 +51,7 @@ EXP_01 <- translate_data(TPM_03, 'hsa')
 # Scale the data between 0 and 1 based on percentile
 EXP_02 <- normalize_data(EXP_01, percentil = TRUE)
 
-# Load mTOR pathways in human
+# Load the mTOR signalling pathway in human
 PATH_01 <- load_pathways(species = 'hsa', pathways_list = 'hsa04150')
 
 # Compute signal scores for decomposed pathways
@@ -60,7 +61,7 @@ SGNL_02 <- get_paths_data(SGNL_01, matrix = TRUE)
 # Extract group information
 GROUP_02 <- GROUP_01$GROUP
 
-# Compare signal scores between case and control
+# Compare signal scores between the case and control
 CMP_01 <- do_wilcoxon(SGNL_02, GROUP_02, g1 = 'LUSC', g2 = 'NST', paired = TRUE)
 
 

@@ -1,7 +1,6 @@
 ********************************************************************************************************************;    
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: ccRCC_02_EstimationQ_4May2025_KKK.sas
 * Objective: Estimation of Q_1 and Q_0
 * Author: Kenta Kevee Kisai
@@ -26,7 +25,7 @@ data _null_;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;       
-* Estimate Q_1 and Q_0 for each interaction in the mTOR pathway map
+* Estimate Q_1 and Q_0 for each PPI in the mTOR signalling pathway map
 	* Input: ADS.ccRCC_ADX_&PPI. 
 	* Output: ADS.ccRCC_ADQ_&PPI. 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -2831,7 +2830,7 @@ data ADS.ccRCC_ADQ_mTORC2_Akt;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate the results of each interaction
+* Integrate the results of each PPI
 	* Input: ADS.ccRCC_ADQ_&PPI. 
 	* Output: TLF.ccRCC_ADQ
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;

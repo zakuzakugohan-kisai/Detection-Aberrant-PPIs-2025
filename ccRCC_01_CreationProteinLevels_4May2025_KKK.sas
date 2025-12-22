@@ -1,7 +1,6 @@
 ********************************************************************************************************************;
-* Project: Model-based detection of aberrant protein-protein interactions 
-					for explorating aberrant signalling pathways 
-					through pathway maps and gene expression levels
+* Project: Model-based quantification of protein-protein interaction aberrations 
+					for exploring dysregulated signalling pathways through pathway maps and gene expression levels
 * Program: ccRCC_01_CreationProteinLevels_4May2025_KKK.sas
 * Objective: Creation of protein levels
 * Author: Kenta Kevee Kisai
@@ -26,9 +25,9 @@ data _null_;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Load the file without opening it
-	* Input: Group_11Mar2024.xlsx, UnstrandedTPM_11Mar2024.xlsx
-	* Output: GROUP, TPM
+* Load files without opening them
+	* Input: Group_11Mar2024.xlsx and UnstrandedTPM_11Mar2024.xlsx
+	* Output: GROUP and TPM
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 /* 1_RAW */
 proc import out = GROUP
@@ -45,8 +44,8 @@ proc import out = TPM
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate the GROUP and TPM datasets
-	* Input: GROUP, TPM
+* Integrate GROUP and TPM
+	* Input: GROUP and TPM
 	* Output: EXP
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
 /* GROUP */
@@ -215,7 +214,7 @@ data EXP;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Create the steady-state protein levels in the mTOR pathway map
+* Create steady-state protein levels in the mTOR signalling pathway map
 	* Input: EXP
 	* Output: ADX
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -382,7 +381,7 @@ data ADX;
 run;
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Create the protein levels for each interaction in the mTOR pathway map
+* Create protein levels for each PPI in the mTOR signalling pathway map
 	* Input: ADX
 	* Output: ADS.ccRCC_ADX_&PPI.
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -980,7 +979,7 @@ run;
 %macro MOX (PPI);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Calculate the mean of X_1 and X_2
+* Calculate the mean for each of X_1 and X_2 by group 
 	* Input: ADS.ccRCC_ADX_&PPI. 
 	* Output: ADS.ccRCC_MOX_&PPI.
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
@@ -1072,7 +1071,7 @@ run;
 %MOX (PPI = mTORC2_Akt);
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
-* Integrate the results of each interaction
+* Integrate the results of each PPI
 	* Input: ADS.ccRCC_MOX_&PPI.
 	* Output: TLF.ccRCC_MOX
 * ------------------------------------------------------------------------------------------------------------------------------------------------------- *;
